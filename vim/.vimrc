@@ -96,7 +96,16 @@ set statusline+=\
 colorscheme gruvbox 
 set background=dark
 set t_CO=256                    "Use 256 colors. This is useful for Terminal Vim.
+
 hi vertsplit guifg=bg guibg=bg
+
+"-------------quick fix--------------"
+highlight! link QuickFixLine Normal
+nnoremap <leader>o :copen<cr>
+nnoremap <leader>l :cclose<cr>
+
+" GTFO
+nnoremap <C-g> :cclose<cr> 
 
 
 "-------------Search--------------"
@@ -209,6 +218,22 @@ call s:SourceConfigFilesIn('rcplugins')
 
 " source file-specific configuration from separate files
 call s:SourceConfigFilesIn('rcfiles')
+
+"-------------ag--------------"
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+" command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
+
+nnoremap <leader>ag :Ag<SPACE>
 
 "-------------git-gutter--------------"
 " let g:gitgutter_override_sign_column_highlight = 0
