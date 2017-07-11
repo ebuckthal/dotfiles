@@ -56,6 +56,42 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 set wildignore+=**/.git
 set wildignore+=*.pyc
 
+"-------------status line--------------"
+" always enabled
+set laststatus=2
+
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0 ? l:branchname : ''
+endfunction
+
+function! GetCurrentDirectory()
+   return fnamemodify(getcwd(), ':t')
+endfunction
+
+set statusline=
+set statusline+=%#LineNr#
+set statusline+=%{GetCurrentDirectory()}
+set statusline+=\ ツ\ 
+set statusline+=%#String#
+set statusline+=%{StatuslineGit()}
+set statusline+=\ ツ\ 
+set statusline+=%#Normal#
+set statusline+=%f
+set statusline+=%m
+set statusline+=%=
+set statusline+=%#LineNr#
+"set statusline+=\ %y
+"set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+"set statusline+=\[%{&fileformat}\]
+set statusline+=\ %p%%
+set statusline+=\ %l:%c
+set statusline+=\ 
+
 "-------------Visuals--------------"
 colorscheme gruvbox 
 set background=dark
@@ -174,11 +210,20 @@ call s:SourceConfigFilesIn('rcplugins')
 " source file-specific configuration from separate files
 call s:SourceConfigFilesIn('rcfiles')
 
+"-------------git-gutter--------------"
+" let g:gitgutter_override_sign_column_highlight = 0
+highlight clear SignColumn
+highlight GitGutterAdd guibg=bg
+highlight GitGutterChange guibg=bg
+highlight GitGutterDelete guibg=bg
+highlight GitGutterChangeDelete guibg=bg
+
 "-------------netwr--------------"
 let g:netrw_liststyle = 3
 
 "-------------ctrl-p--------------"
-let g:ctrlp_working_path_mode = 'ra'
+" always use cwd
+let g:ctrlp_working_path_mode = ''
 
 "-------------prettier--------------"
 let g:prettier#config#bracket_spacing = 'true'
