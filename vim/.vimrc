@@ -5,7 +5,7 @@
 set nocompatible
 set shell=/bin/zsh
 
-so ~/.vim/plugins.vim
+so $HOME/.vim/plugins.vim
 
 filetype on 
 filetype plugin on 
@@ -14,11 +14,14 @@ syntax enable
 set backspace=indent,eol,start   "Make backspace behave like every other editor.
 let mapleader = ','              "The default is \, but a comma is much better.
 set number                       "Let's activate line numbers.
-set relativenumber
+" set relativenumber
 "Save on buffer switch
 set autowrite                    
 set complete=.,w,b,u
 set showcmd
+
+set undofile
+set undodir=$HOME/.vim/undo
 
 set nobackup
 set nowritebackup
@@ -29,18 +32,18 @@ set noswapfile
 set wrap                       
 
 " Tab stuff - soft tabs, 3 spaces
-set tabstop=3
-set shiftwidth=3
+set tabstop=2
+set shiftwidth=2
 " use multiple of shiftwidth when indenting with '<' and '>'
 set shiftround                   
 set expandtab
 set smarttab
 " when hitting <BS>, pretend like a tab is removed, even if spaces
-set softtabstop=3                
+set softtabstop=2                
 
 " ignore case if search pattern is all lowercase
+set ignorecase
 set smartcase                    
-set cursorline
 set splitright
 
 set scrolloff=15
@@ -56,48 +59,65 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 set wildignore+=**/.git
 set wildignore+=*.pyc
 
+
 "-------------status line--------------"
 " always enabled
 set laststatus=2
-
-function! GitBranch()
-  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-
-function! StatuslineGit()
-  let l:branchname = GitBranch()
-  return strlen(l:branchname) > 0 ? l:branchname : ''
-endfunction
 
 function! GetCurrentDirectory()
    return fnamemodify(getcwd(), ':t')
 endfunction
 
-set statusline=
-set statusline+=%#LineNr#
-set statusline+=%{GetCurrentDirectory()}
-set statusline+=\ ツ\ 
-set statusline+=%#String#
-set statusline+=%{StatuslineGit()}
-set statusline+=\ ツ\ 
-set statusline+=%#Normal#
-set statusline+=%f
-set statusline+=%m
-set statusline+=%=
-set statusline+=%#LineNr#
-"set statusline+=\ %y
-"set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-"set statusline+=\[%{&fileformat}\]
-set statusline+=\ %p%%
-set statusline+=\ %l:%c
-set statusline+=\ 
+function! SetActiveStatusLine()
+   setlocal cursorline
+
+   setlocal statusline=
+   setlocal statusline+=%{GetCurrentDirectory()}
+   setlocal statusline+=\ ツ\ 
+   setlocal statusline+=%f
+   setlocal statusline+=%m
+   setlocal statusline+=%=
+   setlocal statusline+=%#LineNr#
+   "setlocal statusline+=\ %y
+   "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+   "setlocal statusline+=\[%{&fileformat}\]
+   setlocal statusline+=\ %p%%
+   setlocal statusline+=\ %l:%c
+   setlocal statusline+=\ 
+endfunction
+
+function! SetInactiveStatusLine()
+   setlocal nocursorline
+
+   setlocal statusline=
+   setlocal statusline+=%#GruvboxBg3#
+   setlocal statusline+=%{GetCurrentDirectory()}
+   setlocal statusline+=\ ツ\ 
+   setlocal statusline+=%f
+   setlocal statusline+=%m
+   setlocal statusline+=%=
+   setlocal statusline+=%#LineNr#
+   "setlocal statusline+=\ %y
+   "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+   "setlocal statusline+=\[%{&fileformat}\]
+   setlocal statusline+=\ %p%%
+   setlocal statusline+=\ %l:%c
+   setlocal statusline+=\ 
+endfunction
+
+
+augroup vimrc 
+    autocmd!
+    autocmd WinEnter * call SetActiveStatusLine()
+    autocmd WinLeave * call SetInactiveStatusLine()
+augroup END
 
 "-------------Visuals--------------"
 colorscheme gruvbox 
 set background=dark
 set t_CO=256                    "Use 256 colors. This is useful for Terminal Vim.
 
-hi vertsplit guifg=bg guibg=bg
+highlight! link vertsplit GruvboxBg2
 
 "-------------quick fix--------------"
 highlight! link QuickFixLine Normal
@@ -126,42 +146,24 @@ map <C-k> <C-W><C-K>
 map <C-h> <C-W><C-H>
 map <C-l> <C-W><C-L>
 
-
 "-------------Mappings--------------"
 " Down is really the next line
 nnoremap j gj
 nnoremap k gk
 
 "Make tabs sensible
-" nnoremap tl :tabnext<CR>
-" nnoremap th :tabprev<CR>
-" nnoremap tn :tabnew<CR>
-" nnoremap td :tabclose<CR>
-
-map <D-S-]> gt
-map <D-S-[> gT
-map <D-1> 1gt
-map <D-2> 2gt
-map <D-3> 3gt
-map <D-4> 4gt
-map <D-5> 5gt
-map <D-6> 6gt
-map <D-7> 7gt
-map <D-8> 8gt
-map <D-9> 9gt
-map <D-0> :tablast<CR>
-
+nnoremap tl :tabnext<CR>
+nnoremap th :tabprev<CR>
+nnoremap tn :tabnew<CR>
+nnoremap td :tabclose<CR>
+nnoremap t1 1gt
+nnoremap t2 2gt
+nnoremap t3 3gt
 
 "Add simple highlight removal.
 nmap <Leader><space> :nohlsearch<cr>
 
 imap jk <Esc>
-
-"Make NERDTree easier to toggle
-" nmap <C-n> :NERDTreeToggle<cr>
-  
-" nmap <C-e> :CtrlPMRUFiles<cr>
-" nmap <C-m> :CtrlPBufTag<cr>
 
 nmap <S-Insert> "+p
 
@@ -191,16 +193,6 @@ nmap <leader>q :q<cr>
 " saner behavior of / and ? 
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
-
-"-------------Extras--------------"
-"Automatically remove whitespace from certain filetypes on save
-" function! <SID>StripTrailingWhitespaces()
-"     let l = line(".")
-"     let c = col(".")
-"     %s/\s\+$//e
-"     call cursor(l, c)
-" endfun
-" autocmd BufWritePre *.h,*.c,*.java,*.js,*.scss,*.css,*.html,*.json :call <SID>StripTrailingWhitespaces()
 
 "-------------Plugins--------------"
 " A function which can source all files from a directory
@@ -251,10 +243,10 @@ let g:netrw_liststyle = 3
 let g:ctrlp_working_path_mode = ''
 
 "-------------prettier--------------"
-let g:prettier#config#bracket_spacing = 'true'
+" let g:prettier#config#bracket_spacing = 'true'
 
-let g:prettier#autoformat = 0
-autocmd BufWritePre *.js,*.json,*.css,*.scss,*.less,*.graphql PrettierAsync
+" let g:prettier#autoformat = 0
+" autocmd BufWritePre *.js,*.json,*.css,*.scss,*.less,*.graphql PrettierAsync
 
 "-------------javascript--------------"
 let g:javascript_plugin_flow = 1
@@ -283,11 +275,6 @@ hi link jsFlowArray jsFlowType
 hi link jsFlowObject jsFlowType
 
 "-------------Auto-Commands--------------"
-"Automatically source the Vimrc file on save.
-augroup autosourcing
-   autocmd!
-   autocmd BufWritePost .vimrc source %
-augroup END
 
 " ## added by OPAM user-setup for vim / base ## 93ee63e278bdfc07d1139a748ed3fff2 ## you can edit, but keep this line
 let s:opam_share_dir = system("opam config var share")

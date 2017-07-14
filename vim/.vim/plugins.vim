@@ -2,16 +2,20 @@
 
 " general
 Plug 'tpope/vim-sensible'
-" Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
+Plug 'itchyny/vim-gitbranch'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-commentary'
 
 Plug 'airblade/vim-gitgutter'
 
+Plug 'jszakmeister/vim-togglecursor'
+
 " Plug 'scrooloose/nerdtree'
-Plug 'ctrlpvim/ctrlp.vim'
+" Plug 'ctrlpvim/ctrlp.vim'
 " Plug 'rking/ag.vim'
+"
 Plug 'ervandew/supertab'
 Plug 'skwp/greplace.vim'
 Plug 'mattn/emmet-vim'
@@ -21,6 +25,8 @@ Plug 'mitermayer/vim-prettier', {
 	\ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] } 
 
 Plug 'gerw/vim-HiLinkTrace'
+
+Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 
 
 " yavascript
