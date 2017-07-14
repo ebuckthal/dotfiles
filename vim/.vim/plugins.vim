@@ -10,19 +10,16 @@ Plug 'tpope/vim-commentary'
 
 Plug 'airblade/vim-gitgutter'
 
-Plug 'jszakmeister/vim-togglecursor'
-
 " Plug 'scrooloose/nerdtree'
 " Plug 'ctrlpvim/ctrlp.vim'
 " Plug 'rking/ag.vim'
-"
+
+
+Plug 'sbdchd/neoformat'
 Plug 'ervandew/supertab'
 Plug 'skwp/greplace.vim'
 Plug 'mattn/emmet-vim'
-Plug 'vim-syntastic/syntastic'
-Plug 'mitermayer/vim-prettier', { 
-	\ 'do': 'yarn install', 
-	\ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] } 
+" Plug 'vim-syntastic/syntastic'
 
 Plug 'gerw/vim-HiLinkTrace'
 

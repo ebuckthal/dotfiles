@@ -163,14 +163,14 @@ nnoremap t3 3gt
 "Add simple highlight removal.
 nmap <Leader><space> :nohlsearch<cr>
 
+nnoremap <leader>m :messages<cr>
+
 imap jk <Esc>
 
 nmap <S-Insert> "+p
 
 " Switch between the last two files
 " nnoremap <leader><leader> <c-^>
-nmap <leader><leader> :CtrlPBuffer<cr>
-nmap <leader>p :CtrlP<cr>
  
 " Thanks Gary! Always expand %%
 cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
@@ -211,16 +211,22 @@ call s:SourceConfigFilesIn('rcplugins')
 " source file-specific configuration from separate files
 call s:SourceConfigFilesIn('rcfiles')
 
-"-------------ag--------------"
+"-------------fzf--------------"
+nnoremap <leader>p :FZF<cr>
+nnoremap <C-P> :FZF<cr>
+
+nnoremap <leader>ag :Ag<cr>
+
+" get rid of the god damn history thing and use <C-R> instead
+nnoremap q: <nop> 
+nnoremap q/ <nop> 
+nnoremap q? <nop> 
+nnoremap <C-R> :History:<cr>
+
+
 if executable('ag')
   " Use ag over grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
 endif
 
 " command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
@@ -238,15 +244,31 @@ highlight GitGutterChangeDelete guibg=bg
 "-------------netwr--------------"
 let g:netrw_liststyle = 3
 
-"-------------ctrl-p--------------"
-" always use cwd
-let g:ctrlp_working_path_mode = ''
-
 "-------------prettier--------------"
 " let g:prettier#config#bracket_spacing = 'true'
 
 " let g:prettier#autoformat = 0
 " autocmd BufWritePre *.js,*.json,*.css,*.scss,*.less,*.graphql PrettierAsync
+" autocmd FileType javascript set formatprg=prettier\ --single-quote\ --trailing-comma\ all\ --stdin
+
+" on save + save cursor position
+"
+let g:neoformat_javascript_prettier = {
+      \ 'exe': 'prettier',
+      \ 'args': ['--trailing-comma all','--single-quote'],
+      \ 'stdin': 1
+      \ }
+
+let g:neoformat_enabled_javascript = ['prettier']
+
+augroup fmt
+  autocmd!
+  autocmd InsertLeave * try | silent undojoin | catch | endtry | Neoformat
+augroup END
+
+" let g:neoformat_only_msg_on_error = 1
+let g:neoformat_verbose = 1
+
 
 "-------------javascript--------------"
 let g:javascript_plugin_flow = 1
