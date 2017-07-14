@@ -217,11 +217,12 @@ nnoremap <C-P> :FZF<cr>
 
 nnoremap <leader>ag :Ag<cr>
 
+nnoremap <leader><leader> :Buffers<cr>
+
 " get rid of the god damn history thing and use <C-R> instead
-nnoremap q: <nop> 
+nnoremap q: :History:<cr>
 nnoremap q/ <nop> 
 nnoremap q? <nop> 
-nnoremap <C-R> :History:<cr>
 
 
 if executable('ag')
@@ -245,30 +246,10 @@ highlight GitGutterChangeDelete guibg=bg
 let g:netrw_liststyle = 3
 
 "-------------prettier--------------"
-" let g:prettier#config#bracket_spacing = 'true'
-
-" let g:prettier#autoformat = 0
-" autocmd BufWritePre *.js,*.json,*.css,*.scss,*.less,*.graphql PrettierAsync
-" autocmd FileType javascript set formatprg=prettier\ --single-quote\ --trailing-comma\ all\ --stdin
-
-" on save + save cursor position
-"
-let g:neoformat_javascript_prettier = {
-      \ 'exe': 'prettier',
-      \ 'args': ['--trailing-comma all','--single-quote'],
-      \ 'stdin': 1
-      \ }
-
-let g:neoformat_enabled_javascript = ['prettier']
-
 augroup fmt
   autocmd!
-  autocmd InsertLeave * try | silent undojoin | catch | endtry | Neoformat
+  autocmd InsertLeave *.js try | silent undojoin | catch | endtry | Prettier 
 augroup END
-
-" let g:neoformat_only_msg_on_error = 1
-let g:neoformat_verbose = 1
-
 
 "-------------javascript--------------"
 let g:javascript_plugin_flow = 1

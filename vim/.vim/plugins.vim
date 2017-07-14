@@ -10,12 +10,8 @@ Plug 'tpope/vim-commentary'
 
 Plug 'airblade/vim-gitgutter'
 
-" Plug 'scrooloose/nerdtree'
-" Plug 'ctrlpvim/ctrlp.vim'
-" Plug 'rking/ag.vim'
+Plug 'ebuckthal/prettier.vim'
 
-
-Plug 'sbdchd/neoformat'
 Plug 'ervandew/supertab'
 Plug 'skwp/greplace.vim'
 Plug 'mattn/emmet-vim'
