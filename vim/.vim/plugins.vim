@@ -10,6 +10,8 @@ Plug 'tpope/vim-commentary'
 
 Plug 'airblade/vim-gitgutter'
 
+Plug 'chriskempson/base16-vim'
+
 Plug 'ervandew/supertab'
 Plug 'skwp/greplace.vim'
 Plug 'mattn/emmet-vim'
@@ -20,6 +22,10 @@ Plug 'osyo-manga/vim-over'
 Plug 'gerw/vim-HiLinkTrace'
 
 Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+
+Plug 'christoomey/vim-tmux-navigator'
+
+Plug 'roosta/srcery'
 
 
 " yavascript

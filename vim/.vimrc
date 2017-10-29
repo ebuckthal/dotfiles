@@ -7,6 +7,18 @@ set shell=/bin/zsh
 
 so $HOME/.vim/plugins.vim
 
+" fix copy/paste for tmux use
+" if $TMUX == ''
+"   set clipboard+=unnamed
+" endif
+
+"-------------Visuals--------------"
+" colorscheme gruvbox 
+colorscheme srcery
+set background=dark
+" colorscheme base16-tomorrow
+set t_CO=256                    "Use 256 colors. This is useful for Terminal Vim.
+
 filetype on 
 filetype plugin on 
 filetype indent on 
@@ -15,10 +27,13 @@ set backspace=indent,eol,start   "Make backspace behave like every other editor.
 let mapleader = ','              "The default is \, but a comma is much better.
 set number                       "Let's activate line numbers.
 " set relativenumber
-"Save on buffer switch
-set autowrite                    
 set complete=.,w,b,u
 set showcmd
+
+"automatically read changes from disk
+set autoread 
+
+set hidden
 
 set undofile
 set undodir=$HOME/.vim/undo
@@ -59,6 +74,8 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 set wildignore+=**/.git
 set wildignore+=*.pyc
 
+set cursorline 
+
 
 "-------------status line--------------"
 " always enabled
@@ -77,7 +94,6 @@ function! SetActiveStatusLine()
    setlocal statusline+=%f
    setlocal statusline+=%m
    setlocal statusline+=%=
-   setlocal statusline+=%#LineNr#
    "setlocal statusline+=\ %y
    "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
    "setlocal statusline+=\[%{&fileformat}\]
@@ -90,13 +106,12 @@ function! SetInactiveStatusLine()
    setlocal nocursorline
 
    setlocal statusline=
-   setlocal statusline+=%#GruvboxBg3#
+   "setlocal statusline+=%#GruvboxBg3#
    setlocal statusline+=%{GetCurrentDirectory()}
    setlocal statusline+=\ ツ\ 
    setlocal statusline+=%f
    setlocal statusline+=%m
    setlocal statusline+=%=
-   setlocal statusline+=%#LineNr#
    "setlocal statusline+=\ %y
    "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
    "setlocal statusline+=\[%{&fileformat}\]
@@ -112,10 +127,6 @@ augroup vimrc
     autocmd WinLeave * call SetInactiveStatusLine()
 augroup END
 
-"-------------Visuals--------------"
-colorscheme gruvbox 
-set background=dark
-set t_CO=256                    "Use 256 colors. This is useful for Terminal Vim.
 
 highlight! link vertsplit GruvboxBg2
 
@@ -125,7 +136,7 @@ nnoremap <leader>o :copen<cr>
 nnoremap <leader>l :cclose<cr>
 
 " GTFO
-nnoremap <C-g> :cclose<cr> 
+" nnoremap <C-g> :cclose<cr> 
 
 
 "-------------Search--------------"
@@ -165,7 +176,12 @@ nmap <Leader><space> :nohlsearch<cr>
 
 nnoremap <leader>m :messages<cr>
 
+cmap <C-g> <C-c>
+
 imap jk <Esc>
+imap JK <Esc>
+imap jK <Esc>
+imap Jk <Esc>
 
 nmap <S-Insert> "+p
 
@@ -194,6 +210,19 @@ nmap <leader>q :q<cr>
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
 
+" copy to mac clipboard
+map <leader>y :w !pbcopy<cr><cr>
+
+" copy to mac clipboard
+map <leader>y :w !pbcopy<cr><cr>
+
+
+" copy to mac clipboard
+map <leader>y :w !pbcopy<cr><cr>
+map <leader>p :r !pbpaste<cr><cr>
+
+map L :Eval<cr>
+
 "-------------Plugins--------------"
 " A function which can source all files from a directory
 function! s:SourceConfigFilesIn(directory)
@@ -211,7 +240,11 @@ call s:SourceConfigFilesIn('rcplugins')
 " source file-specific configuration from separate files
 call s:SourceConfigFilesIn('rcfiles')
 
+"-------------fugitive--------------"
+nnoremap <leader>gs :Gstatus<cr>
+
 "-------------fzf--------------"
+let g:fzf_layout = { 'down': '~20%' }
 nnoremap <leader>p :FZF<cr>
 nnoremap <C-P> :FZF<cr>
 
@@ -219,7 +252,6 @@ nnoremap <leader>ag :Ag<cr>
 
 nnoremap <leader><leader> :Buffers<cr>
 
-" get rid of the god damn history thing and use <C-R> instead
 nnoremap q: :History:<cr>
 nnoremap q/ <nop> 
 nnoremap q? <nop> 
@@ -245,14 +277,27 @@ highlight GitGutterChangeDelete guibg=bg
 "-------------netwr--------------"
 let g:netrw_liststyle = 3
 
+"-------------autopep8--------------"
+" augroup fmt
+"   autocmd!
+"   autocmd BufWritePre *.py try | silent undojoin | catch | endtry | Autopep8 
+" augroup END
+
 "-------------prettier--------------"
 augroup fmt
   autocmd!
-  autocmd InsertLeave *.js try | silent undojoin | catch | endtry | Prettier 
+  autocmd BufWritePre *.js try | silent undojoin | catch | endtry | Prettier 
 augroup END
+
+"-------------flow--------------"
+nnoremap <leader>f :!yarn run flow \| tail -n +1 \| head<cr>
+
 
 "-------------javascript--------------"
 let g:javascript_plugin_flow = 1
+
+
+"-------------gruvbox mods--------------"
 
 hi link jsStorageClass Keyword 
 hi link jsOperator Keyword
@@ -277,37 +322,7 @@ hi link jsFlowTypeCustom jsFlowType
 hi link jsFlowArray jsFlowType
 hi link jsFlowObject jsFlowType
 
-"-------------Auto-Commands--------------"
 
-" ## added by OPAM user-setup for vim / base ## 93ee63e278bdfc07d1139a748ed3fff2 ## you can edit, but keep this line
-let s:opam_share_dir = system("opam config var share")
-let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
-
-let s:opam_configuration = {}
-
-function! OpamConfOcpIndent()
-  execute "set rtp^=" . s:opam_share_dir . "/ocp-indent/vim"
-endfunction
-let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
-
-function! OpamConfOcpIndex()
-  execute "set rtp+=" . s:opam_share_dir . "/ocp-index/vim"
-endfunction
-let s:opam_configuration['ocp-index'] = function('OpamConfOcpIndex')
-
-function! OpamConfMerlin()
-  let l:dir = s:opam_share_dir . "/merlin/vim"
-  execute "set rtp+=" . l:dir
-endfunction
-let s:opam_configuration['merlin'] = function('OpamConfMerlin')
-
-let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
-let s:opam_check_cmdline = ["opam list --installed --short --safe --color=never"] + s:opam_packages
-let s:opam_available_tools = split(system(join(s:opam_check_cmdline)))
-for tool in s:opam_packages
-  " Respect package order (merlin should be after ocp-index)
-  if count(s:opam_available_tools, tool) > 0
-    call s:opam_configuration[tool]()
-  endif
-endfor
-" ## end of OPAM user-setup addition for vim / base ## keep this line
+"-------------jinja--------------"
+hi link jinjaVarBlock Special 
+hi link jinjaTagBlock Identifier 
