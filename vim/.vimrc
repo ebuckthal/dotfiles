@@ -1,28 +1,21 @@
-" .vimrc
-" Eric Buckthal 
-" 7 10 2017
-" inspired by https://github.com/christoomey/dotfiles/blob/master/vim/vimrc
 set nocompatible
+filetype plugin indent on 
+syntax on
+
 set shell=/bin/zsh
 
 so $HOME/.vim/plugins.vim
 
-" fix copy/paste for tmux use
-" if $TMUX == ''
-"   set clipboard+=unnamed
-" endif
+" V I S U A L S 
+" https://github.com/chriskempson/base16-shell
+" matches vim to shell color via base16
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+  source ~/.vimrc_background
+endif
 
-"-------------Visuals--------------"
-" colorscheme gruvbox 
-colorscheme srcery
-set background=dark
-" colorscheme base16-tomorrow
-set t_CO=256                    "Use 256 colors. This is useful for Terminal Vim.
+hi VertSplit ctermfg=bg
 
-filetype on 
-filetype plugin on 
-filetype indent on 
-syntax enable
 set backspace=indent,eol,start   "Make backspace behave like every other editor.
 let mapleader = ','              "The default is \, but a comma is much better.
 set number                       "Let's activate line numbers.
@@ -38,28 +31,30 @@ set hidden
 set undofile
 set undodir=$HOME/.vim/undo
 
-set nobackup
-set nowritebackup
-" http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
-set noswapfile                   
+set nobackup               " git pretty much solves this
+set nowritebackup          " git pretty much solves this
+set noswapfile             " disable swap file
 
-" wrap lines
-set wrap                       
+set wrap                   " wrap lines
 
-" Tab stuff - soft tabs, 3 spaces
-set tabstop=2
-set shiftwidth=2
-" use multiple of shiftwidth when indenting with '<' and '>'
-set shiftround                   
-set expandtab
-set smarttab
-" when hitting <BS>, pretend like a tab is removed, even if spaces
-set softtabstop=2                
+set tabstop=2              " spaces per tab
+set shiftwidth=2           " spaces per tab (when shifting)
+set shiftround             " use multiple of shiftwidth when indenting with '<' and '>'
+set expandtab              " always use spaces instead of tabs
+set smarttab               " when hitting <BS>, pretend like a tab is removed, even if spaces
+set softtabstop=2  
 
-" ignore case if search pattern is all lowercase
-set ignorecase
+if has('linebreak')
+  let &showbreak='↳ '      " DOWNWARDS ARROW WITH TIP RIGHTWARDS (U+21B3, UTF-8: E2 86 B3)
+endif
+
+
+set ignorecase             " ignore case if search pattern is all lowercase
 set smartcase                    
 set splitright
+if has('nvim')
+  set inccommand=split     " does fancy find/replace stuff like evil-mode
+endif
 
 set scrolloff=15
 
@@ -76,67 +71,33 @@ set wildignore+=*.pyc
 
 set cursorline 
 
+" S T A T U S L I N E
+set laststatus=2                      " always enabled
 
-"-------------status line--------------"
-" always enabled
-set laststatus=2
-
-function! GetCurrentDirectory()
-   return fnamemodify(getcwd(), ':t')
-endfunction
-
-function! SetActiveStatusLine()
-   setlocal cursorline
-
-   setlocal statusline=
-   setlocal statusline+=%{GetCurrentDirectory()}
-   setlocal statusline+=\ ツ\ 
-   setlocal statusline+=%f
-   setlocal statusline+=%m
-   setlocal statusline+=%=
-   "setlocal statusline+=\ %y
-   "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-   "setlocal statusline+=\[%{&fileformat}\]
-   setlocal statusline+=\ %p%%
-   setlocal statusline+=\ %l:%c
-   setlocal statusline+=\ 
-endfunction
-
-function! SetInactiveStatusLine()
-   setlocal nocursorline
-
-   setlocal statusline=
-   "setlocal statusline+=%#GruvboxBg3#
-   setlocal statusline+=%{GetCurrentDirectory()}
-   setlocal statusline+=\ ツ\ 
-   setlocal statusline+=%f
-   setlocal statusline+=%m
-   setlocal statusline+=%=
-   "setlocal statusline+=\ %y
-   "setlocal statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-   "setlocal statusline+=\[%{&fileformat}\]
-   setlocal statusline+=\ %p%%
-   setlocal statusline+=\ %l:%c
-   setlocal statusline+=\ 
-endfunction
+" F O L D I N G 
+if has('folding')
+  if has('windows')
+    set fillchars=vert:┃              " BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
+    set fillchars+=fold:·             " MIDDLE DOT (U+00B7, UTF-8: C2 B7)
+  endif
+  set foldmethod=indent               " not as cool as syntax, but faster
+  set foldlevelstart=99               " start unfolded
+endif
 
 
-augroup vimrc 
-    autocmd!
-    autocmd WinEnter * call SetActiveStatusLine()
-    autocmd WinLeave * call SetInactiveStatusLine()
-augroup END
+" Toggle fold at current position.
+nnoremap <Tab> za
 
+" Avoid unintentional switches to Ex mode.
+nnoremap Q <nop>
 
-highlight! link vertsplit GruvboxBg2
 
 "-------------quick fix--------------"
 highlight! link QuickFixLine Normal
 nnoremap <leader>o :copen<cr>
 nnoremap <leader>l :cclose<cr>
 
-" GTFO
-" nnoremap <C-g> :cclose<cr> 
+nnoremap <C-g> :cclose<cr> 
 
 
 "-------------Search--------------"
@@ -223,23 +184,6 @@ map <leader>p :r !pbpaste<cr><cr>
 
 map L :Eval<cr>
 
-"-------------Plugins--------------"
-" A function which can source all files from a directory
-function! s:SourceConfigFilesIn(directory)
-  let directory_splat = '~/.vim/' . a:directory . '/*'
-  for config_file in split(glob(directory_splat), '\n')
-    if filereadable(config_file)
-        execute 'source' config_file
-    endif
-  endfor
-endfunction
-
-" source plugin configuration from separate files
-call s:SourceConfigFilesIn('rcplugins')
-
-" source file-specific configuration from separate files
-call s:SourceConfigFilesIn('rcfiles')
-
 "-------------fugitive--------------"
 nnoremap <leader>gs :Gstatus<cr>
 
@@ -259,7 +203,7 @@ nnoremap q? <nop>
 
 if executable('ag')
   " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
+  set grepprg=ag\ --nogroup\
 endif
 
 " command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
@@ -268,20 +212,17 @@ nnoremap <leader>ag :Ag<SPACE>
 
 "-------------git-gutter--------------"
 " let g:gitgutter_override_sign_column_highlight = 0
-highlight clear SignColumn
-highlight GitGutterAdd guibg=bg
-highlight GitGutterChange guibg=bg
-highlight GitGutterDelete guibg=bg
-highlight GitGutterChangeDelete guibg=bg
+" highlight clear SignColumn
+" highlight GitGutterAdd ctermbg=bg
+" highlight GitGutterChange ctermbg=bg
+" highlight GitGutterDelete ctermbg=bg
+" highlight GitGutterChangeDelete ctermbg=bg
+"
+highlight! link CursorLineNr DiffText
+highlight! link VertSplit NonText
 
 "-------------netwr--------------"
 let g:netrw_liststyle = 3
-
-"-------------autopep8--------------"
-" augroup fmt
-"   autocmd!
-"   autocmd BufWritePre *.py try | silent undojoin | catch | endtry | Autopep8 
-" augroup END
 
 "-------------prettier--------------"
 augroup fmt
@@ -289,15 +230,20 @@ augroup fmt
   autocmd BufWritePre *.js try | silent undojoin | catch | endtry | Prettier 
 augroup END
 
-"-------------flow--------------"
-nnoremap <leader>f :!yarn run flow \| tail -n +1 \| head<cr>
-
 
 "-------------javascript--------------"
 let g:javascript_plugin_flow = 1
 
+" C L O J U R E
+let g:rainbow#blacklist = range(16, 255)  " black lists all non-base16 colors
+augroup rainbow_lisp
+  autocmd!
+  autocmd FileType lisp,clojure,scheme RainbowParentheses
+augroup END
 
-"-------------gruvbox mods--------------"
+"-------------javascript syntax mods--------------"
+hi Comment cterm=italic
+hi Todo cterm=italic
 
 hi link jsStorageClass Keyword 
 hi link jsOperator Keyword
@@ -326,3 +272,11 @@ hi link jsFlowObject jsFlowType
 "-------------jinja--------------"
 hi link jinjaVarBlock Special 
 hi link jinjaTagBlock Identifier 
+
+augroup focus
+  autocmd FocusLost,WinLeave * call focus#blur_window()
+  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call focus#focus_window()
+augroup END
+
+
+
