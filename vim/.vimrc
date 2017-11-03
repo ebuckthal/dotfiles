@@ -6,15 +6,11 @@ set shell=/bin/zsh
 
 so $HOME/.vim/plugins.vim
 
-" V I S U A L S 
-" https://github.com/chriskempson/base16-shell
-" matches vim to shell color via base16
+
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
   source ~/.vimrc_background
 endif
-
-hi VertSplit ctermfg=bg
 
 set backspace=indent,eol,start   "Make backspace behave like every other editor.
 let mapleader = ','              "The default is \, but a comma is much better.
@@ -171,17 +167,6 @@ nmap <leader>q :q<cr>
 nnoremap <expr> n  'Nn'[v:searchforward]
 nnoremap <expr> N  'nN'[v:searchforward]
 
-" copy to mac clipboard
-map <leader>y :w !pbcopy<cr><cr>
-
-" copy to mac clipboard
-map <leader>y :w !pbcopy<cr><cr>
-
-
-" copy to mac clipboard
-map <leader>y :w !pbcopy<cr><cr>
-map <leader>p :r !pbpaste<cr><cr>
-
 map L :Eval<cr>
 
 "-------------fugitive--------------"
@@ -218,8 +203,8 @@ nnoremap <leader>ag :Ag<SPACE>
 " highlight GitGutterDelete ctermbg=bg
 " highlight GitGutterChangeDelete ctermbg=bg
 "
-highlight! link CursorLineNr DiffText
-highlight! link VertSplit NonText
+" highlight! link CursorLineNr DiffText
+" highlight! link VertSplit NonText
 
 "-------------netwr--------------"
 let g:netrw_liststyle = 3
@@ -242,8 +227,6 @@ augroup rainbow_lisp
 augroup END
 
 "-------------javascript syntax mods--------------"
-hi Comment cterm=italic
-hi Todo cterm=italic
 
 hi link jsStorageClass Keyword 
 hi link jsOperator Keyword
@@ -272,11 +255,3 @@ hi link jsFlowObject jsFlowType
 "-------------jinja--------------"
 hi link jinjaVarBlock Special 
 hi link jinjaTagBlock Identifier 
-
-augroup focus
-  autocmd FocusLost,WinLeave * call focus#blur_window()
-  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call focus#focus_window()
-augroup END
-
-
-

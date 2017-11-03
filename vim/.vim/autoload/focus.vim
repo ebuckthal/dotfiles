@@ -6,7 +6,7 @@ endfunction
 
 function! focus#blur_window() abort
   if focus#should_colorcolumn()
-    ownsyntax off
+    " ownsyntax off
   endif
 endfunction
 
